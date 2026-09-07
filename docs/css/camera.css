@@ -2,6 +2,7 @@
     box-sizing: border-box;
 }
 
+
 html,
 body {
     margin: 0;
@@ -20,6 +21,7 @@ body {
             "Segoe UI",
             sans-serif;
 }
+
 
 body {
     color: white;
@@ -61,6 +63,7 @@ body {
     pointer-events: none;
 }
 
+
 #liveCanvas,
 #photoPreview {
     position: absolute;
@@ -73,15 +76,15 @@ body {
     object-fit: cover;
 }
 
+
 #liveCanvas {
     z-index: 2;
 
     display: block;
 
-    /* Много важно:
-       canvas-ът не трябва да прихваща кликовете */
     pointer-events: none;
 }
+
 
 #photoPreview {
     z-index: 3;
@@ -89,9 +92,8 @@ body {
     display: none;
 
     object-fit: cover;
-
-    pointer-events: none;
 }
+
 
 #canvas {
     display: none;
@@ -125,6 +127,7 @@ body {
     pointer-events: none;
 }
 
+
 .logo {
     font-size: 13px;
 
@@ -135,6 +138,7 @@ body {
     text-shadow:
             0 1px 8px rgba(0, 0, 0, 0.8);
 }
+
 
 .top-button {
     width: 44px;
@@ -162,11 +166,8 @@ body {
     cursor: pointer;
 
     pointer-events: auto;
-
-    position: relative;
-
-    z-index: 30;
 }
+
 
 .top-button:active {
     transform: scale(0.92);
@@ -203,8 +204,6 @@ body {
 
     transition:
             opacity 0.3s ease;
-
-    pointer-events: none;
 }
 
 
@@ -227,6 +226,7 @@ body {
     pointer-events: none;
 }
 
+
 .effect-container {
     width: 100%;
 
@@ -246,10 +246,6 @@ body {
     -webkit-backdrop-filter: blur(22px);
 
     pointer-events: auto;
-
-    position: relative;
-
-    z-index: 20;
 }
 
 
@@ -275,15 +271,13 @@ body {
     scrollbar-width: none;
 
     pointer-events: auto;
-
-    position: relative;
-
-    z-index: 25;
 }
+
 
 .category-bar::-webkit-scrollbar {
     display: none;
 }
+
 
 .category {
     flex: 0 0 auto;
@@ -304,17 +298,15 @@ body {
     position: relative;
 
     white-space: nowrap;
-
-    pointer-events: auto;
-
-    z-index: 30;
 }
+
 
 .category.active {
     color: white;
 
     font-weight: 600;
 }
+
 
 .category.active::after {
     content: "";
@@ -346,11 +338,8 @@ body {
         repeat(2, minmax(0, 1fr));
 
     gap: 11px 16px;
-
-    position: relative;
-
-    z-index: 25;
 }
+
 
 .effect-group.active {
     display: grid;
@@ -363,11 +352,8 @@ body {
 
 .effect-item {
     min-width: 0;
-
-    position: relative;
-
-    z-index: 25;
 }
+
 
 .effect-header {
     display: flex;
@@ -382,6 +368,7 @@ body {
     color:
             rgba(255, 255, 255, 0.92);
 }
+
 
 .effect-header span:last-child {
     color:
@@ -415,13 +402,8 @@ input[type="range"] {
     background: transparent;
 
     cursor: pointer;
-
-    pointer-events: auto;
-
-    position: relative;
-
-    z-index: 30;
 }
+
 
 input[type="range"]::-webkit-slider-runnable-track {
     height: 3px;
@@ -431,6 +413,7 @@ input[type="range"]::-webkit-slider-runnable-track {
     background:
             rgba(255, 255, 255, 0.28);
 }
+
 
 input[type="range"]::-webkit-slider-thumb {
     appearance: none;
@@ -452,6 +435,7 @@ input[type="range"]::-webkit-slider-thumb {
             0 1px 5px rgba(0, 0, 0, 0.4);
 }
 
+
 input[type="range"]::-moz-range-track {
     height: 3px;
 
@@ -460,6 +444,7 @@ input[type="range"]::-moz-range-track {
     background:
             rgba(255, 255, 255, 0.28);
 }
+
 
 input[type="range"]::-moz-range-thumb {
     width: 14px;
@@ -525,22 +510,18 @@ input[type="range"]::-moz-range-thumb {
 
     pointer-events: auto;
 
-    position: relative;
-
-    z-index: 30;
-
     transition:
             transform 0.1s ease;
 }
+
 
 .capture:active {
     transform: scale(0.9);
 }
 
+
 .capture:disabled {
     opacity: 0.6;
-
-    pointer-events: none;
 }
 
 
@@ -572,11 +553,8 @@ input[type="range"]::-moz-range-thumb {
     cursor: pointer;
 
     pointer-events: auto;
-
-    position: relative;
-
-    z-index: 30;
 }
+
 
 .side-button:active {
     transform: scale(0.94);
@@ -602,26 +580,32 @@ input[type="range"]::-moz-range-thumb {
         bottom: 98px;
     }
 
+
     .effect-container {
         padding:
                 12px 13px;
     }
 
+
     .category-bar {
         gap: 14px;
     }
+
 
     .category {
         font-size: 12px;
     }
 
+
     .effect-header {
         font-size: 10px;
     }
 
+
     .bottom {
         gap: 20px;
     }
+
 }
 
 
@@ -640,67 +624,9 @@ input[type="range"]::-moz-range-thumb {
 
         bottom: 90px;
     }
+
 }
 
 
-/* =========================================================
-   CLICK / TOUCH FIX
-   ========================================================= */
-
-/*
-   Камерата и canvas-ът са само визуален слой.
-   Те НЕ трябва да прихващат докосванията.
-*/
-
-#camera,
-#liveCanvas,
-#photoPreview {
-    pointer-events: none;
-}
 
 
-/*
-   Всички контроли са над камерата.
-*/
-
-.topbar,
-.status,
-.beauty-panel,
-.bottom {
-    position: absolute;
-
-    pointer-events: none;
-}
-
-.topbar,
-.beauty-panel,
-.bottom {
-    z-index: 20;
-}
-
-
-/*
-   Самите интерактивни елементи приемат кликове.
-*/
-
-.top-button,
-.category,
-input[type="range"],
-.capture,
-.side-button {
-    pointer-events: auto;
-
-    position: relative;
-
-    z-index: 100;
-}
-
-
-/*
-   Допълнителна защита за целия панел.
-*/
-
-.effect-container,
-.category-bar {
-    pointer-events: auto;
-}
