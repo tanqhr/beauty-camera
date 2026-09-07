@@ -793,10 +793,18 @@
 <!-- =========================
      BEAUTY CAMERA JS
      ========================= -->
-<script src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.21/vision_bundle.js"></script>
+<script type="module">
+    import {
+        FaceLandmarker,
+        FilesetResolver
+    } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.21/vision_bundle.mjs";
+
+    window.FaceLandmarker = FaceLandmarker;
+    window.FilesetResolver = FilesetResolver;
+</script>
+
 <script src="./js/face-effects.js"></script>
 <script src="./js/face-warp.js"></script>
 <script src="./js/camera.js"></script>
-
 </body>
 </html>
