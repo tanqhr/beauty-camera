@@ -7,6 +7,10 @@ let faceLandmarker = null;
 let faceLandmarkerReady = false;
 let faceLandmarkerLoading = false;
 
+
+/*
+ * Зареждане на MediaPipe Face Landmarker
+ */
 async function initFaceLandmarker() {
 
     if (faceLandmarkerReady) {
@@ -21,39 +25,76 @@ async function initFaceLandmarker() {
 
     try {
 
-        console.log("Зареждане на MediaPipe...");
+        console.log("Изчакване на MediaPipe...");
 
         /*
-         * Зареждаме MediaPipe директно като ES module.
-         * Това работи и в GitHub Pages.
+         * Изчакваме vision_bundle.js да зареди
+         * FilesetResolver и FaceLandmarker.
          */
-        const module = await import(
-            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/+esm"
-        );
+        let attempts = 0;
 
-        const FilesetResolver = module.FilesetResolver;
-        const FaceLandmarker = module.FaceLandmarker;
+        while (
+            (
+                typeof FilesetResolver === "undefined" ||
+                typeof FaceLandmarker === "undefined"
+            ) &&
+            attempts < 100
+        ) {
 
-        if (!FilesetResolver || !FaceLandmarker) {
-            throw new Error("MediaPipe FaceLandmarker не е намерен.");
+            await new Promise(resolve =>
+                setTimeout(resolve, 100)
+            );
+
+            attempts++;
         }
 
-        console.log("MediaPipe библиотеката е заредена.");
 
+        /*
+         * Проверка дали MediaPipe е зареден
+         */
+        if (
+            typeof FilesetResolver === "undefined" ||
+            typeof FaceLandmarker === "undefined"
+        ) {
+
+            throw new Error(
+                "MediaPipe Tasks Vision не можа да бъде зареден."
+            );
+        }
+
+
+        console.log(
+            "MediaPipe библиотеката е заредена."
+        );
+
+
+        /*
+         * Зареждаме WASM файловете
+         */
         const vision =
             await FilesetResolver.forVisionTasks(
                 "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm"
             );
 
-        console.log("MediaPipe WASM е зареден.");
 
+        console.log(
+            "MediaPipe WASM е зареден."
+        );
+
+
+        /*
+         * Създаваме Face Landmarker
+         */
         faceLandmarker =
             await FaceLandmarker.createFromOptions(
                 vision,
                 {
+
                     baseOptions: {
+
                         modelAssetPath:
                             "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task"
+
                     },
 
                     runningMode: "VIDEO",
@@ -67,14 +108,22 @@ async function initFaceLandmarker() {
                     minTrackingConfidence: 0.5,
 
                     outputFaceBlendshapes: true
+
                 }
             );
 
+
+        /*
+         * MediaPipe е готов
+         */
         faceLandmarkerReady = true;
 
-        console.log("Face Landmarker е готов.");
+        console.log(
+            "Face Landmarker е готов."
+        );
 
         return true;
+
 
     } catch (error) {
 
@@ -86,6 +135,7 @@ async function initFaceLandmarker() {
         faceLandmarkerReady = false;
 
         return false;
+
 
     } finally {
 
@@ -106,12 +156,17 @@ function detectFace(video) {
         !video ||
         !video.videoWidth
     ) {
+
         return null;
+
     }
+
 
     try {
 
-        const timestamp = performance.now();
+        const timestamp =
+            performance.now();
+
 
         const result =
             faceLandmarker.detectForVideo(
@@ -119,15 +174,20 @@ function detectFace(video) {
                 timestamp
             );
 
+
         if (
             !result ||
             !result.faceLandmarks ||
             result.faceLandmarks.length === 0
         ) {
+
             return null;
+
         }
 
+
         return result;
+
 
     } catch (error) {
 
@@ -137,7 +197,9 @@ function detectFace(video) {
         );
 
         return null;
+
     }
+
 }
 
 
@@ -151,15 +213,19 @@ function getFaceLandmarks(result) {
         !result.faceLandmarks ||
         result.faceLandmarks.length === 0
     ) {
+
         return null;
+
     }
 
     return result.faceLandmarks[0];
+
 }
 
 
 /*
- * Landmark → pixel координати
+ * Преобразува landmark координати
+ * от 0–1 към пиксели
  */
 function landmarkToPixel(
     landmark,
@@ -168,10 +234,15 @@ function landmarkToPixel(
 ) {
 
     return {
+
         x: landmark.x * width,
+
         y: landmark.y * height,
+
         z: landmark.z
+
     };
+
 }
 
 
@@ -188,18 +259,24 @@ function getFaceCenter(
         !landmarks ||
         landmarks.length === 0
     ) {
+
         return null;
+
     }
+
 
     let x = 0;
     let y = 0;
 
+
     landmarks.forEach(point => {
 
         x += point.x;
+
         y += point.y;
 
     });
+
 
     return {
 
@@ -212,11 +289,12 @@ function getFaceCenter(
             height
 
     };
+
 }
 
 
 /*
- * Размери на лицето
+ * Граници на лицето
  */
 function getFaceBounds(
     landmarks,
@@ -228,48 +306,75 @@ function getFaceBounds(
         !landmarks ||
         landmarks.length === 0
     ) {
+
         return null;
+
     }
+
 
     let minX = 1;
     let minY = 1;
+
     let maxX = 0;
     let maxY = 0;
 
+
     landmarks.forEach(point => {
 
-        minX = Math.min(minX, point.x);
-        minY = Math.min(minY, point.y);
+        minX =
+            Math.min(
+                minX,
+                point.x
+            );
 
-        maxX = Math.max(maxX, point.x);
-        maxY = Math.max(maxY, point.y);
+        minY =
+            Math.min(
+                minY,
+                point.y
+            );
+
+        maxX =
+            Math.max(
+                maxX,
+                point.x
+            );
+
+        maxY =
+            Math.max(
+                maxY,
+                point.y
+            );
 
     });
 
+
     return {
 
-        left: minX * width,
+        left:
+            minX * width,
 
-        top: minY * height,
+        top:
+            minY * height,
 
-        right: maxX * width,
+        right:
+            maxX * width,
 
-        bottom: maxY * height,
+        bottom:
+            maxY * height,
 
         width:
-            (maxX - minX) *
-            width,
+            (maxX - minX) * width,
 
         height:
-            (maxY - minY) *
-            height
+            (maxY - minY) * height
 
     };
+
 }
 
 
 /*
- * Основни точки на лицето
+ * Важни точки на лицето
  */
 const FACE_POINTS = {
 
@@ -317,7 +422,7 @@ const FACE_POINTS = {
 
 
 /*
- * Взима конкретна точка
+ * Взима конкретна точка от лицето
  */
 function getFacePoint(
     landmarks,
@@ -329,18 +434,24 @@ function getFacePoint(
     const index =
         FACE_POINTS[name];
 
+
     if (
         index === undefined ||
+        !landmarks ||
         !landmarks[index]
     ) {
+
         return null;
+
     }
+
 
     return landmarkToPixel(
         landmarks[index],
         width,
         height
     );
+
 }
 
 
@@ -361,6 +472,7 @@ function getNoseInfo(
             height
         );
 
+
     const center =
         getFacePoint(
             landmarks,
@@ -369,14 +481,22 @@ function getNoseInfo(
             height
         );
 
+
     if (!tip || !center) {
+
         return null;
+
     }
 
+
     return {
+
         tip,
+
         center
+
     };
+
 }
 
 
@@ -397,6 +517,7 @@ function getLipsInfo(
             height
         );
 
+
     const lower =
         getFacePoint(
             landmarks,
@@ -404,6 +525,7 @@ function getLipsInfo(
             width,
             height
         );
+
 
     const left =
         getFacePoint(
@@ -413,6 +535,7 @@ function getLipsInfo(
             height
         );
 
+
     const right =
         getFacePoint(
             landmarks,
@@ -421,21 +544,31 @@ function getLipsInfo(
             height
         );
 
+
     if (
         !upper ||
         !lower ||
         !left ||
         !right
     ) {
+
         return null;
+
     }
 
+
     return {
+
         upper,
+
         lower,
+
         left,
+
         right
+
     };
+
 }
 
 
@@ -456,6 +589,7 @@ function getEyesInfo(
             height
         );
 
+
     const right =
         getFacePoint(
             landmarks,
@@ -463,6 +597,7 @@ function getEyesInfo(
             width,
             height
         );
+
 
     const leftTop =
         getFacePoint(
@@ -472,6 +607,7 @@ function getEyesInfo(
             height
         );
 
+
     const rightTop =
         getFacePoint(
             landmarks,
@@ -479,6 +615,7 @@ function getEyesInfo(
             width,
             height
         );
+
 
     const leftBottom =
         getFacePoint(
@@ -488,6 +625,7 @@ function getEyesInfo(
             height
         );
 
+
     const rightBottom =
         getFacePoint(
             landmarks,
@@ -496,9 +634,13 @@ function getEyesInfo(
             height
         );
 
+
     if (!left || !right) {
+
         return null;
+
     }
+
 
     return {
 
@@ -515,11 +657,12 @@ function getEyesInfo(
         rightBottom
 
     };
+
 }
 
 
 /*
- * Анализ на лицето
+ * Пълен анализ на лицето
  */
 function analyzeFace(
     landmarks,
@@ -528,8 +671,11 @@ function analyzeFace(
 ) {
 
     if (!landmarks) {
+
         return null;
+
     }
+
 
     return {
 
@@ -569,11 +715,13 @@ function analyzeFace(
             )
 
     };
+
 }
 
 
 /*
- * Debug точки върху лицето
+ * Debug режим –
+ * рисува точките на лицето
  */
 function drawFaceDebug(
     ctx,
@@ -583,13 +731,18 @@ function drawFaceDebug(
 ) {
 
     if (!landmarks) {
+
         return;
+
     }
+
 
     ctx.save();
 
+
     ctx.fillStyle =
         "rgba(255,255,255,0.8)";
+
 
     for (const point of landmarks) {
 
@@ -599,7 +752,9 @@ function drawFaceDebug(
         const y =
             point.y * height;
 
+
         ctx.beginPath();
+
 
         ctx.arc(
             x,
@@ -609,11 +764,14 @@ function drawFaceDebug(
             Math.PI * 2
         );
 
+
         ctx.fill();
 
     }
 
+
     ctx.restore();
+
 }
 
 
