@@ -626,3 +626,29 @@ input[type="range"]::-moz-range-thumb {
     }
 
 }
+
+
+
+#camera,
+#liveCanvas {
+    pointer-events: none;
+}
+
+.topbar,
+.status,
+.beauty-panel,
+.bottom-controls {
+    position: relative;
+    z-index: 20;
+    pointer-events: auto;
+}
+
+.capture-btn,
+.side-btn,
+.icon-btn,
+.category-btn,
+.effect-btn {
+    pointer-events: auto;
+    position: relative;
+    z-index: 30;
+}
