@@ -1,37 +1,51 @@
 /*
  * Face Effects
- *
- * Подготовка за реална обработка на лице.
- * Използва MediaPipe Face Landmarker,
- * зареден от camera.html.
+ * MediaPipe Face Landmarker
  */
 
 let faceLandmarker = null;
 let faceLandmarkerReady = false;
-
-
-/* =========================
-   MEDIAPIPE
-   ========================= */
+let faceLandmarkerLoading = false;
 
 async function initFaceLandmarker() {
 
+    if (faceLandmarkerReady) {
+        return true;
+    }
+
+    if (faceLandmarkerLoading) {
+        return false;
+    }
+
+    faceLandmarkerLoading = true;
+
     try {
 
-        if (typeof FilesetResolver === "undefined" ||
-            typeof FaceLandmarker === "undefined") {
+        console.log("Зареждане на MediaPipe...");
 
-            console.warn(
-                "MediaPipe Tasks Vision не е зареден."
-            );
+        /*
+         * Зареждаме MediaPipe директно като ES module.
+         * Това работи и в GitHub Pages.
+         */
+        const module = await import(
+            "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/+esm"
+        );
 
-            return false;
+        const FilesetResolver = module.FilesetResolver;
+        const FaceLandmarker = module.FaceLandmarker;
+
+        if (!FilesetResolver || !FaceLandmarker) {
+            throw new Error("MediaPipe FaceLandmarker не е намерен.");
         }
+
+        console.log("MediaPipe библиотеката е заредена.");
 
         const vision =
             await FilesetResolver.forVisionTasks(
                 "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/wasm"
             );
+
+        console.log("MediaPipe WASM е зареден.");
 
         faceLandmarker =
             await FaceLandmarker.createFromOptions(
@@ -58,52 +72,58 @@ async function initFaceLandmarker() {
 
         faceLandmarkerReady = true;
 
-        console.log(
-            "Face Landmarker е готов."
-        );
+        console.log("Face Landmarker е готов.");
 
         return true;
 
     } catch (error) {
 
         console.error(
-            "Face Landmarker error:",
+            "Грешка при зареждане на MediaPipe:",
             error
         );
 
         faceLandmarkerReady = false;
 
         return false;
+
+    } finally {
+
+        faceLandmarkerLoading = false;
+
     }
 }
 
 
-/* =========================
-   DETECT FACE
-   ========================= */
-
+/*
+ * Откриване на лице
+ */
 function detectFace(video) {
 
-    if (!faceLandmarkerReady ||
+    if (
+        !faceLandmarkerReady ||
         !faceLandmarker ||
         !video ||
-        !video.videoWidth) {
-
+        !video.videoWidth
+    ) {
         return null;
     }
 
     try {
 
+        const timestamp = performance.now();
+
         const result =
             faceLandmarker.detectForVideo(
                 video,
-                performance.now()
+                timestamp
             );
 
-        if (!result ||
+        if (
+            !result ||
             !result.faceLandmarks ||
-            result.faceLandmarks.length === 0) {
-
+            result.faceLandmarks.length === 0
+        ) {
             return null;
         }
 
@@ -121,16 +141,16 @@ function detectFace(video) {
 }
 
 
-/* =========================
-   GET FIRST FACE
-   ========================= */
-
+/*
+ * Взима първото намерено лице
+ */
 function getFaceLandmarks(result) {
 
-    if (!result ||
+    if (
+        !result ||
         !result.faceLandmarks ||
-        result.faceLandmarks.length === 0) {
-
+        result.faceLandmarks.length === 0
+    ) {
         return null;
     }
 
@@ -138,10 +158,9 @@ function getFaceLandmarks(result) {
 }
 
 
-/* =========================
-   LANDMARK → PIXELS
-   ========================= */
-
+/*
+ * Landmark → pixel координати
+ */
 function landmarkToPixel(
     landmark,
     width,
@@ -156,19 +175,19 @@ function landmarkToPixel(
 }
 
 
-/* =========================
-   FACE CENTER
-   ========================= */
-
+/*
+ * Център на лицето
+ */
 function getFaceCenter(
     landmarks,
     width,
     height
 ) {
 
-    if (!landmarks ||
-        landmarks.length === 0) {
-
+    if (
+        !landmarks ||
+        landmarks.length === 0
+    ) {
         return null;
     }
 
@@ -183,31 +202,37 @@ function getFaceCenter(
     });
 
     return {
-        x: (x / landmarks.length) * width,
-        y: (y / landmarks.length) * height
+
+        x:
+            (x / landmarks.length) *
+            width,
+
+        y:
+            (y / landmarks.length) *
+            height
+
     };
 }
 
 
-/* =========================
-   FACE BOUNDS
-   ========================= */
-
+/*
+ * Размери на лицето
+ */
 function getFaceBounds(
     landmarks,
     width,
     height
 ) {
 
-    if (!landmarks ||
-        landmarks.length === 0) {
-
+    if (
+        !landmarks ||
+        landmarks.length === 0
+    ) {
         return null;
     }
 
     let minX = 1;
     let minY = 1;
-
     let maxX = 0;
     let maxY = 0;
 
@@ -222,30 +247,31 @@ function getFaceBounds(
     });
 
     return {
+
         left: minX * width,
+
         top: minY * height,
+
         right: maxX * width,
+
         bottom: maxY * height,
 
         width:
-            (maxX - minX) * width,
+            (maxX - minX) *
+            width,
 
         height:
-            (maxY - minY) * height
+            (maxY - minY) *
+            height
+
     };
 }
 
 
-/* =========================
-   IMPORTANT FACE POINTS
-   ========================= */
-
+/*
+ * Основни точки на лицето
+ */
 const FACE_POINTS = {
-
-    /*
-     * Тези индекси са стандартни
-     * MediaPipe Face Mesh landmarks.
-     */
 
     noseTip: 1,
 
@@ -286,13 +312,13 @@ const FACE_POINTS = {
     leftFaceSide: 127,
 
     rightFaceSide: 356
+
 };
 
 
-/* =========================
-   GET POINT
-   ========================= */
-
+/*
+ * Взима конкретна точка
+ */
 function getFacePoint(
     landmarks,
     name,
@@ -318,10 +344,9 @@ function getFacePoint(
 }
 
 
-/* =========================
-   NOSE INFORMATION
-   ========================= */
-
+/*
+ * Информация за носа
+ */
 function getNoseInfo(
     landmarks,
     width,
@@ -355,10 +380,9 @@ function getNoseInfo(
 }
 
 
-/* =========================
-   LIPS INFORMATION
-   ========================= */
-
+/*
+ * Информация за устните
+ */
 function getLipsInfo(
     landmarks,
     width,
@@ -397,11 +421,12 @@ function getLipsInfo(
             height
         );
 
-    if (!upper ||
+    if (
+        !upper ||
         !lower ||
         !left ||
-        !right) {
-
+        !right
+    ) {
         return null;
     }
 
@@ -414,10 +439,9 @@ function getLipsInfo(
 }
 
 
-/* =========================
-   EYES INFORMATION
-   ========================= */
-
+/*
+ * Информация за очите
+ */
 function getEyesInfo(
     landmarks,
     width,
@@ -477,20 +501,26 @@ function getEyesInfo(
     }
 
     return {
+
         left,
+
         right,
+
         leftTop,
+
         rightTop,
+
         leftBottom,
+
         rightBottom
+
     };
 }
 
 
-/* =========================
-   FACE INFORMATION
-   ========================= */
-
+/*
+ * Анализ на лицето
+ */
 function analyzeFace(
     landmarks,
     width,
@@ -537,14 +567,14 @@ function analyzeFace(
                 width,
                 height
             )
+
     };
 }
 
 
-/* =========================
-   DEBUG DRAW
-   ========================= */
-
+/*
+ * Debug точки върху лицето
+ */
 function drawFaceDebug(
     ctx,
     landmarks,
@@ -558,7 +588,8 @@ function drawFaceDebug(
 
     ctx.save();
 
-    ctx.fillStyle = "rgba(255,255,255,0.8)";
+    ctx.fillStyle =
+        "rgba(255,255,255,0.8)";
 
     for (const point of landmarks) {
 
@@ -579,14 +610,14 @@ function drawFaceDebug(
         );
 
         ctx.fill();
+
     }
 
     ctx.restore();
 }
 
 
-/* =========================
-   INITIALIZE
-   ========================= */
-
+/*
+ * Стартираме MediaPipe
+ */
 initFaceLandmarker();
