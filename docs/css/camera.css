@@ -2,7 +2,6 @@
     box-sizing: border-box;
 }
 
-
 html,
 body {
     margin: 0;
@@ -22,7 +21,6 @@ body {
             sans-serif;
 }
 
-
 body {
     color: white;
 }
@@ -32,7 +30,7 @@ body {
    APP
    ========================================================= */
 
-.app {
+#app {
     position: relative;
 
     width: 100vw;
@@ -92,6 +90,8 @@ body {
     display: none;
 
     object-fit: cover;
+
+    pointer-events: none;
 }
 
 
@@ -128,7 +128,7 @@ body {
 }
 
 
-.logo {
+.brand {
     font-size: 13px;
 
     font-weight: 700;
@@ -140,7 +140,7 @@ body {
 }
 
 
-.top-button {
+.icon-btn {
     width: 44px;
     height: 44px;
 
@@ -162,14 +162,19 @@ body {
     justify-content: center;
 
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 
     cursor: pointer;
 
     pointer-events: auto;
+
+    position: relative;
+
+    z-index: 30;
 }
 
 
-.top-button:active {
+.icon-btn:active {
     transform: scale(0.92);
 }
 
@@ -195,6 +200,7 @@ body {
             rgba(0, 0, 0, 0.35);
 
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 
     font-size: 11px;
 
@@ -204,6 +210,8 @@ body {
 
     transition:
             opacity 0.3s ease;
+
+    pointer-events: none;
 }
 
 
@@ -227,33 +235,11 @@ body {
 }
 
 
-.effect-container {
-    width: 100%;
-
-    max-width: 520px;
-
-    margin: 0 auto;
-
-    padding: 15px 16px 14px;
-
-    border-radius: 22px;
-
-    background:
-            rgba(15, 15, 15, 0.68);
-
-    backdrop-filter: blur(22px);
-
-    -webkit-backdrop-filter: blur(22px);
-
-    pointer-events: auto;
-}
-
-
 /* =========================================================
-   CATEGORY BAR
+   CATEGORIES
    ========================================================= */
 
-.category-bar {
+.categories {
     width: 100%;
 
     max-width: 520px;
@@ -274,7 +260,7 @@ body {
 }
 
 
-.category-bar::-webkit-scrollbar {
+.categories::-webkit-scrollbar {
     display: none;
 }
 
@@ -298,6 +284,10 @@ body {
     position: relative;
 
     white-space: nowrap;
+
+    pointer-events: auto;
+
+    z-index: 30;
 }
 
 
@@ -332,17 +322,48 @@ body {
    ========================================================= */
 
 .effect-group {
+    width: 100%;
+
+    max-width: 520px;
+
+    margin: 0 auto;
+
+    padding: 15px 16px 14px;
+
+    border-radius: 22px;
+
+    background:
+            rgba(15, 15, 15, 0.68);
+
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
+
     display: none;
 
-    grid-template-columns:
-        repeat(2, minmax(0, 1fr));
+    pointer-events: auto;
 
-    gap: 11px 16px;
+    position: relative;
+
+    z-index: 20;
 }
 
 
 .effect-group.active {
+    display: block;
+}
+
+
+/* =========================================================
+   EFFECT GRID
+   ========================================================= */
+
+.effect-grid {
     display: grid;
+
+    grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+    gap: 11px 16px;
 }
 
 
@@ -350,12 +371,16 @@ body {
    EFFECT
    ========================================================= */
 
-.effect-item {
+.effect {
     min-width: 0;
+
+    position: relative;
+
+    z-index: 25;
 }
 
 
-.effect-header {
+.effect label {
     display: flex;
 
     justify-content: space-between;
@@ -367,10 +392,12 @@ body {
 
     color:
             rgba(255, 255, 255, 0.92);
+
+    cursor: default;
 }
 
 
-.effect-header span:last-child {
+.effect label span {
     color:
             rgba(255, 255, 255, 0.55);
 
@@ -396,12 +423,17 @@ input[type="range"] {
     padding: 0;
 
     appearance: none;
-
     -webkit-appearance: none;
 
     background: transparent;
 
     cursor: pointer;
+
+    pointer-events: auto;
+
+    position: relative;
+
+    z-index: 30;
 }
 
 
@@ -417,7 +449,6 @@ input[type="range"]::-webkit-slider-runnable-track {
 
 input[type="range"]::-webkit-slider-thumb {
     appearance: none;
-
     -webkit-appearance: none;
 
     width: 14px;
@@ -429,7 +460,8 @@ input[type="range"]::-webkit-slider-thumb {
 
     border: 2px solid white;
 
-    background: rgba(255, 255, 255, 0.95);
+    background:
+            rgba(255, 255, 255, 0.95);
 
     box-shadow:
             0 1px 5px rgba(0, 0, 0, 0.4);
@@ -459,10 +491,10 @@ input[type="range"]::-moz-range-thumb {
 
 
 /* =========================================================
-   BOTTOM
+   BOTTOM CONTROLS
    ========================================================= */
 
-.bottom {
+.bottom-controls {
     position: absolute;
 
     left: 0;
@@ -489,12 +521,14 @@ input[type="range"]::-moz-range-thumb {
 
 
 /* =========================================================
-   CAPTURE
+   CAPTURE BUTTON
    ========================================================= */
 
-.capture {
+.capture-btn {
     width: 72px;
     height: 72px;
+
+    padding: 0;
 
     border-radius: 50%;
 
@@ -510,18 +544,34 @@ input[type="range"]::-moz-range-thumb {
 
     pointer-events: auto;
 
+    position: relative;
+
+    z-index: 100;
+
     transition:
             transform 0.1s ease;
 }
 
 
-.capture:active {
+.capture-btn span {
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    border-radius: 50%;
+}
+
+
+.capture-btn:active {
     transform: scale(0.9);
 }
 
 
-.capture:disabled {
+.capture-btn:disabled {
     opacity: 0.6;
+
+    pointer-events: none;
 }
 
 
@@ -529,7 +579,7 @@ input[type="range"]::-moz-range-thumb {
    SIDE BUTTONS
    ========================================================= */
 
-.side-button {
+.side-btn {
     min-width: 62px;
 
     height: 40px;
@@ -549,14 +599,19 @@ input[type="range"]::-moz-range-thumb {
     font-size: 12px;
 
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 
     cursor: pointer;
 
     pointer-events: auto;
+
+    position: relative;
+
+    z-index: 100;
 }
 
 
-.side-button:active {
+.side-btn:active {
     transform: scale(0.94);
 }
 
@@ -571,6 +626,35 @@ input[type="range"]::-moz-range-thumb {
 
 
 /* =========================================================
+   CLICK PROTECTION
+   ========================================================= */
+
+/*
+   Камерата и canvas-ът са само визуални.
+   Те никога не прихващат кликове.
+*/
+
+#camera,
+#liveCanvas,
+#photoPreview {
+    pointer-events: none;
+}
+
+
+/*
+   Интерактивните елементи са над canvas-а.
+*/
+
+.icon-btn,
+.category,
+input[type="range"],
+.capture-btn,
+.side-btn {
+    pointer-events: auto;
+}
+
+
+/* =========================================================
    SMALL PHONES
    ========================================================= */
 
@@ -580,32 +664,31 @@ input[type="range"]::-moz-range-thumb {
         bottom: 98px;
     }
 
-
-    .effect-container {
+    .effect-group {
         padding:
                 12px 13px;
     }
 
-
-    .category-bar {
+    .categories {
         gap: 14px;
     }
-
 
     .category {
         font-size: 12px;
     }
 
-
-    .effect-header {
+    .effect label {
         font-size: 10px;
     }
 
-
-    .bottom {
+    .bottom-controls {
         gap: 20px;
     }
 
+    .capture-btn {
+        width: 66px;
+        height: 66px;
+    }
 }
 
 
@@ -626,7 +709,3 @@ input[type="range"]::-moz-range-thumb {
     }
 
 }
-
-
-
-
