@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="bg">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    >
+
+    <meta
+            name="theme-color"
+            content="#000000"
+    >
+
+    <link
+            rel="manifest"
+            href="/manifest.json"
+    >
+
+    <title>Beauty Camera</title>
+
+    <link
+            rel="stylesheet"
+            href="/camera.css"
+    >
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+    <!-- =====================================================
+         CAMERA
+         ===================================================== -->
+
+    <video
+            id="camera"
+            autoplay
+            playsinline
+            muted>
+    </video>
+
+
+    <canvas
+            id="liveCanvas">
+    </canvas>
+
+
+    <img
+            id="photoPreview"
+            alt="Снимка"
+    >
+
+
+    <canvas
+            id="canvas">
+    </canvas>
+
+
+    <!-- =====================================================
+         TOP BAR
+         ===================================================== -->
+
+    <div class="topbar">
+
+        <div class="top-left">
+
+            <div class="logo">
+                BEAUTY
+            </div>
+
+        </div>
+
+
+        <div class="top-right">
+
+            <button
+                    id="flipBtn"
+                    class="top-button"
+                    type="button"
+                    aria-label="Смени камерата">
+                ↻
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         STATUS
+         ===================================================== -->
+
+    <div
+            id="status"
+            class="status">
+        Зареждане на камерата...
+    </div>
+
+
+    <!-- =====================================================
+         BEAUTY PANEL
+         ===================================================== -->
+
+    <div
+            id="beautyPanel"
+            class="beauty-panel">
+
+
+        <!-- CATEGORY TABS -->
+
+        <div class="category-bar">
+
+            <button
+                    class="category active"
+                    data-category="beauty"
+                    type="button">
+                Beauty
+            </button>
+
+
+            <button
+                    class="category"
+                    data-category="face"
+                    type="button">
+                Лице
+            </button>
+
+
+            <button
+                    class="category"
+                    data-category="nose"
+                    type="button">
+                Нос
+            </button>
+
+
+            <button
+                    class="category"
+                    data-category="eyes"
+                    type="button">
+                Очи
+            </button>
+
+
+            <button
+                    class="category"
+                    data-category="lips"
+                    type="button">
+                Устни
+            </button>
+
+
+            <button
+                    class="category"
+                    data-category="skin"
+                    type="button">
+                Кожа
+            </button>
+
+
+            <button
+                    class="category"
+                    data-category="makeup"
+                    type="button">
+                Makeup
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             EFFECTS
+             ================================================= -->
+
+        <div
+                id="effectContainer"
+                class="effect-container">
+
+
+            <!-- BEAUTY -->
+
+            <div
+                    class="effect-group active"
+                    data-group="beauty">
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+
+                        <span>Beauty</span>
+
+                        <span id="beautyValue">
+                            50
+                        </span>
+
+                    </div>
+
+                    <input
+                            id="beauty"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="50">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+
+                        <span>Кожа</span>
+
+                        <span id="skinValue">
+                            30
+                        </span>
+
+                    </div>
+
+                    <input
+                            id="skin"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="30">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+
+                        <span>Светлина</span>
+
+                        <span id="lightValue">
+                            10
+                        </span>
+
+                    </div>
+
+                    <input
+                            id="light"
+                            type="range"
+                            min="-100"
+                            max="100"
+                            value="10">
+
+                </div>
+
+            </div>
+
+
+            <!-- FACE -->
+
+            <div
+                    class="effect-group"
+                    data-group="face">
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Стесняване</span>
+                        <span id="faceSlimValue">0</span>
+                    </div>
+
+                    <input
+                            id="faceSlim"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Челюст</span>
+                        <span id="jawValue">0</span>
+                    </div>
+
+                    <input
+                            id="jaw"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Брадичка</span>
+                        <span id="chinValue">0</span>
+                    </div>
+
+                    <input
+                            id="chin"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Бузи</span>
+                        <span id="cheeksValue">0</span>
+                    </div>
+
+                    <input
+                            id="cheeks"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Чело</span>
+                        <span id="foreheadValue">0</span>
+                    </div>
+
+                    <input
+                            id="forehead"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Контур</span>
+                        <span id="contourValue">0</span>
+                    </div>
+
+                    <input
+                            id="contour"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Скулптуриране</span>
+                        <span id="sculptValue">0</span>
+                    </div>
+
+                    <input
+                            id="sculpt"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+            </div>
+
+
+            <!-- NOSE -->
+
+            <div
+                    class="effect-group"
+                    data-group="nose">
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Стесняване</span>
+                        <span id="noseValue">0</span>
+                    </div>
+
+                    <input
+                            id="nose"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Странично</span>
+                        <span id="noseSideValue">0</span>
+                    </div>
+
+                    <input
+                            id="noseSide"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Връх</span>
+                        <span id="noseTipValue">0</span>
+                    </div>
+
+                    <input
+                            id="noseTip"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Повдигане</span>
+                        <span id="noseLiftValue">0</span>
+                    </div>
+
+                    <input
+                            id="noseLift"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Височина</span>
+                        <span id="noseHeightValue">0</span>
+                    </div>
+
+                    <input
+                            id="noseHeight"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+            </div>
+
+
+            <!-- EYES -->
+
+            <div
+                    class="effect-group"
+                    data-group="eyes">
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Размер</span>
+                        <span id="eyesValue">0</span>
+                    </div>
+
+                    <input
+                            id="eyes"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Отваряне</span>
+                        <span id="eyeOpenValue">0</span>
+                    </div>
+
+                    <input
+                            id="eyeOpen"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Повдигане</span>
+                        <span id="eyeLiftValue">0</span>
+                    </div>
+
+                    <input
+                            id="eyeLift"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Под очите</span>
+                        <span id="underEyesValue">0</span>
+                    </div>
+
+                    <input
+                            id="underEyes"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Изсветляване</span>
+                        <span id="eyeBrightValue">0</span>
+                    </div>
+
+                    <input
+                            id="eyeBright"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+            </div>
+
+
+            <!-- LIPS -->
+
+            <div
+                    class="effect-group"
+                    data-group="lips">
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Размер</span>
+                        <span id="lipsValue">0</span>
+                    </div>
+
+                    <input
+                            id="lips"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Ширина</span>
+                        <span id="lipWidthValue">0</span>
+                    </div>
+
+                    <input
+                            id="lipWidth"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Горна устна</span>
+                        <span id="upperLipValue">0</span>
+                    </div>
+
+                    <input
+                            id="upperLip"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Долна устна</span>
+                        <span id="lowerLipValue">0</span>
+                    </div>
+
+                    <input
+                            id="lowerLip"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Ъгли</span>
+                        <span id="lipCornersValue">0</span>
+                    </div>
+
+                    <input
+                            id="lipCorners"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+            </div>
+
+
+            <!-- SKIN -->
+
+            <div
+                    class="effect-group"
+                    data-group="skin">
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Омекотяване</span>
+                        <span id="skinSmoothValue">0</span>
+                    </div>
+
+                    <input
+                            id="skinSmooth"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Назолабиални линии</span>
+                        <span id="nasolabialValue">0</span>
+                    </div>
+
+                    <input
+                            id="nasolabial"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Линии около устата</span>
+                        <span id="mouthLinesValue">0</span>
+                    </div>
+
+                    <input
+                            id="mouthLines"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Челни линии</span>
+                        <span id="foreheadLinesValue">0</span>
+                    </div>
+
+                    <input
+                            id="foreheadLines"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+            </div>
+
+
+            <!-- MAKEUP -->
+
+            <div
+                    class="effect-group"
+                    data-group="makeup">
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Зъби</span>
+                        <span id="teethValue">0</span>
+                    </div>
+
+                    <input
+                            id="teeth"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+
+                <div class="effect-item">
+
+                    <div class="effect-header">
+                        <span>Руж</span>
+                        <span id="blushValue">0</span>
+                    </div>
+
+                    <input
+                            id="blush"
+                            type="range"
+                            min="0"
+                            max="100"
+                            value="0">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         BOTTOM
+         ===================================================== -->
+
+    <div class="bottom">
+
+        <button
+                id="retakeBtn"
+                class="side-button hidden"
+                type="button">
+            Нова
+        </button>
+
+
+        <button
+                id="captureBtn"
+                class="capture"
+                type="button"
+                aria-label="Направи снимка">
+        </button>
+
+
+        <button
+                id="downloadBtn"
+                class="side-button hidden"
+                type="button">
+            Запази
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     MEDIAPIPE
+     ========================================================= -->
+
+<script
+        src="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.22/vision_bundle.js">
+</script>
+
+
+<script src="/js/face-effects.js"></script>
+
+<script src="/js/face-warp.js"></script>
+
+<script src="/js/camera.js"></script>
+
+
+</body>
+
+</html>
